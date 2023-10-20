@@ -27,13 +27,19 @@ async fn main() -> Result<()> {
         return Ok(());
     }
     let config_path = args.config.or(Config::get_default_location());
-    let config = if config_path.as_ref().is_some_and(|v| v.exists()) {
+    let mut config = if config_path.as_ref().is_some_and(|v| v.exists()) {
         // unwrap is checked above.
         Config::parse(&config_path.unwrap())?
     } else {
         tracing::warn!("Using the default configuration (run with `--init` to save it to a file).");
         EmbeddedConfig::parse()?
     };
+
+    if args.no_surprises {
+        tracing::debug!("I bet you're fun at parties.");
+        config.disable_easter_eggs = true;
+    }
+
     tracing::debug!("{:#?}", config);
 
     // Start the typewriter.
@@ -65,7 +71,13 @@ async fn main() -> Result<()> {
     .map(|name| config.select_preset(name))
     .collect::<Result<Vec<_>>>()?;
 
-    match daktilo::run(presets, args.device).await {
+    match daktilo::run(
+        presets,
+        args.sound_variation_args.map(|v| v.into()),
+        args.device,
+    )
+    .await
+    {
         Ok(_) => process::exit(0),
         Err(e) => {
             tracing::error!("error occurred: {e}");

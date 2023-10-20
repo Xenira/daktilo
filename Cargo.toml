@@ -1,6 +1,6 @@
 [package]
 name = "daktilo"
-version = "0.4.0"
+version = "0.5.0"
 description = "Turn your keyboard into a typewriter! 📇"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -26,13 +26,13 @@ path = "src/bin/mangen.rs"
 
 [dependencies]
 rdev = { version = "0.5.3", features = ["serialize"] }
-rodio = { version = "0.17.1", default-features = false, features = [
+rodio = { version = "0.17.2", default-features = false, features = [
   "symphonia-mp3",
 ] }
 rust-embed = { version = "8.0.0", features = ["debug-embed", "compression"] }
-thiserror = "1.0.49"
+thiserror = "1.0.50"
 tokio = { version = "1.33.0", features = ["full"] }
-tracing = "0.1.37"
+tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 clap = { version = "4.4.6", features = ["derive", "env", "wrap_help", "cargo"] }
 serde = { version = "1.0.189", features = ["derive"] }
@@ -82,8 +82,6 @@ cargo-dist-version = "0.3.1"
 ci = ["github"]
 # The installers to generate for each app
 installers = ["shell", "powershell", "msi"]
-# A GitHub repo to push Homebrew formulas to
-tap = "orhun/daktilo"
 # Target platforms to build apps for (Rust target-triple syntax)
 targets = [
   "x86_64-unknown-linux-gnu",
@@ -91,8 +89,6 @@ targets = [
   "x86_64-apple-darwin",
   "x86_64-pc-windows-msvc",
 ]
-# Publish jobs to run in CI
-publish-jobs = ["homebrew"]
 # Publish jobs to run in CI
 pr-run-mode = "upload"
 # Ignore out-of-date contents
