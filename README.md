@@ -382,3 +382,12 @@ Licensed under either of [Apache License Version 2.0](./LICENSE-APACHE) or [The 
 ## Copyright
 
 Copyright © 2023, [Orhun Parmaksız](mailto:orhunparmaksiz@gmail.com)
+
+
+
+This is a typewriter test with ding in nvim It should
+Even if you move your coursor
+That way you know
+where your rulers are and you do not
+type longer lines. It is disabled in visual
+mode

@@ -17,6 +17,8 @@ pub struct App {
     key_press_sink: Sink,
     /// Sink for key releases.
     key_release_sink: Sink,
+    /// Sink for new lines.
+    new_line_sink: Sink,
     /// Whether if the key is released.
     key_released: bool,
     /// Index of the file to play.
@@ -49,11 +51,13 @@ impl App {
         let (stream, handle) = OutputStream::try_from_device(&device)?;
         let key_press_sink = Sink::try_new(&handle)?;
         let key_release_sink = Sink::try_new(&handle)?;
+        let new_line_sink = Sink::try_new(&handle)?;
         Ok(Self {
             preset,
             _stream: stream,
             key_press_sink,
             key_release_sink,
+            new_line_sink,
             key_released: true,
             file_index: 0,
             variation,
@@ -81,6 +85,7 @@ impl App {
                     EventType::KeyRelease(_) => KeyEvent::KeyRelease,
                     _ => unreachable!(),
                 };
+
                 let key_config = self
                     .preset
                     .key_config
@@ -93,6 +98,16 @@ impl App {
                 } else {
                     self.handle_key_release(&key_config)?;
                 }
+            }
+            EventType::ButtonPress(_) => {
+                self.play_sound(
+                    &AudioFile {
+                        path: "ding.mp3".to_string(),
+                        volume: Some(1.2),
+                    },
+                    None,
+                    &self.new_line_sink,
+                )?;
             }
             _ => {}
         };

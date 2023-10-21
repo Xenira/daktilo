@@ -44,6 +44,8 @@ colored = "2.0.4"
 clap_complete = "4.4.3"
 clap_mangen = "0.2.14"
 fastrand = "2.0.1"
+tonic = "0.10.2"
+prost = "0.12.1"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
@@ -93,6 +95,9 @@ targets = [
 pr-run-mode = "upload"
 # Ignore out-of-date contents
 allow-dirty = ["ci", "msi"]
+
+[build-dependencies]
+tonic-build = { version = "0.10.2", features = ["prost"] }
 
 [package.metadata.wix]
 upgrade-guid = "51610A8E-55C9-4F49-8C9F-3529499D5C60"

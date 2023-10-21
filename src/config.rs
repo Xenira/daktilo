@@ -133,6 +133,7 @@ impl fmt::Display for SoundPreset {
             let event_str = match key_config.event {
                 KeyEvent::KeyPress => "Key Press",
                 KeyEvent::KeyRelease => "Key Release",
+                KeyEvent::Ext => "Ext",
             };
             let keys_str = key_config.keys.as_str();
             let file_str = &key_config
@@ -178,6 +179,8 @@ pub enum KeyEvent {
     /// Key release.
     #[serde(rename = "release")]
     KeyRelease,
+    #[serde(rename = "Ext")]
+    Ext,
 }
 
 /// Audio file configuration.
