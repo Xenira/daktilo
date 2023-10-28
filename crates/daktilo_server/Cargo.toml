@@ -1,0 +1,33 @@
+[package]
+name = "daktilo_server"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+license = "MPL-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["client_proto"]
+client_proto = []
+server_proto = []
+server = ["server_proto"]
+
+
+[dependencies]
+prost = "0.12.1"
+tonic = "0.10.2"
+
+[build-dependencies]
+tonic-build = "0.10.2"
+
+# Workaround for https://github.com/foresterre/cargo-msrv/issues/590
+[package.metadata]
+msrv = "1.70.0"

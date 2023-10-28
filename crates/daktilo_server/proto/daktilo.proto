@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package daktilo;
+
+service Daktilo {
+  rpc ReportCursorMovement(ReportCursorMovementRequest) returns (CallResponse) {}
+  rpc ReportLineLength(ReportLineLengthRequest) returns (CallResponse) {}
+}
+
+message ReportCursorMovementRequest {
+  uint64 column_number = 1;
+  optional uint64 line_number = 2;
+  optional string file_path = 3;
+}
+
+message ReportLineLengthRequest {
+  uint64 line_length = 1;
+  optional uint64 line_number = 2;
+  optional string file_path = 3;
+}
+
+message CallResponse {
+  bool success = 1;
+  optional string error_message = 2;
+}
