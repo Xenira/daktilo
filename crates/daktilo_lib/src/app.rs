@@ -3,6 +3,7 @@ use crate::{
     embed::EmbeddedSound,
     error::{Error, Result},
 };
+use daktilo_common::event::DaktiloEvent;
 use rdev::{Event, EventType};
 use rodio::{cpal::traits::HostTrait, Decoder, DeviceTrait, OutputStream, Sink};
 use std::{fs::File, io::BufReader};
@@ -61,24 +62,22 @@ impl App {
     }
 
     /// Handle the key events.
-    pub fn handle_key_event(&mut self, event: Event) -> Result<()> {
-        match event.event_type {
-            EventType::KeyPress(key) | EventType::KeyRelease(key) => {
+    pub fn handle_event(&mut self, event: DaktiloEvent) -> Result<()> {
+        match &event {
+            DaktiloEvent::KeyPress(key) | DaktiloEvent::KeyRelease(key) => {
                 tracing::debug!("Event: {:?}", event);
                 if self
                     .preset
                     .disabled_keys
-                    .as_ref()
-                    .cloned()
-                    .unwrap_or_default()
-                    .contains(&key)
+                    .iter()
+                    .any(|disabled_key| disabled_key.is_match(&key))
                 {
                     tracing::debug!("Skipping: {:?}", key);
                     return Ok(());
                 }
-                let event_type = match event.event_type {
-                    EventType::KeyPress(_) => KeyEvent::KeyPress,
-                    EventType::KeyRelease(_) => KeyEvent::KeyRelease,
+                let event_type = match event {
+                    DaktiloEvent::KeyPress(_) => KeyEvent::KeyPress,
+                    DaktiloEvent::KeyRelease(_) => KeyEvent::KeyRelease,
                     _ => unreachable!(),
                 };
                 let key_config = self

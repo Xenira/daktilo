@@ -1,5 +1,4 @@
 use crate::error::{Error, Result};
-use rdev::Key;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -7,11 +6,14 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::str;
 
+#[cfg(feature = "server")]
+use daktilo_server::server::config::ServerConfig;
+
 /// Default configuration file.
 pub const DEFAULT_CONFIG: &str = "daktilo.toml";
 
 /// Configuration.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct Config {
     /// Sound presets.
     #[serde(rename = "sound_preset")]
@@ -19,6 +21,11 @@ pub struct Config {
     /// Disable the easter eggs.
     #[serde(rename = "no_surprises", default)]
     pub disable_easter_eggs: bool,
+
+    /// Server configuration.
+    #[cfg(feature = "server")]
+    #[serde(rename = "server", default)]
+    pub server_config: ServerConfig,
 }
 
 impl Config {
@@ -89,8 +96,7 @@ impl Config {
                         }),
                     },
                 ],
-                disabled_keys: None,
-                variation: None,
+                ..Default::default()
             });
         }
         self.sound_presets
@@ -102,14 +108,15 @@ impl Config {
 }
 
 /// Sound preset.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct SoundPreset {
     /// Name of the preset.
     pub name: String,
     /// Key configuration.
     pub key_config: Vec<KeyConfig>,
     /// List of disabled keys.
-    pub disabled_keys: Option<Vec<Key>>,
+    #[serde(with = "serde_regex", default)]
+    pub disabled_keys: Vec<Regex>,
     /// Configure sound variations.
     pub variation: Option<SoundVariation>,
 }
@@ -179,7 +186,10 @@ mod tests {
     #[test]
     fn test_parse_config() -> Result<()> {
         let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../")
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
             .join("config")
             .join(DEFAULT_CONFIG);
         if let Some(global_path) = Config::get_default_location() {

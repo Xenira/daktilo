@@ -5,20 +5,35 @@ package daktilo;
 service Daktilo {
   rpc ReportCursorMovement(ReportCursorMovementRequest) returns (CallResponse) {}
   rpc ReportLineLength(ReportLineLengthRequest) returns (CallResponse) {}
+  rpc ActivateProfile(ActivateProfileRequest) returns (CallResponse) {}
+  rpc DeactivateProfile(DeactivateProfileRequest) returns (CallResponse) {}
 }
 
+// Report cursor movement to the server.
 message ReportCursorMovementRequest {
   uint64 column_number = 1;
   optional uint64 line_number = 2;
   optional string file_path = 3;
 }
 
+// Report line length to the server.
 message ReportLineLengthRequest {
   uint64 line_length = 1;
   optional uint64 line_number = 2;
   optional string file_path = 3;
 }
 
+// Activate (temporary) profile.
+message ActivateProfileRequest {
+  string profile_path = 1;
+  optional bool persist = 2;
+}
+
+// Deactivate temporary profile.
+message DeactivateProfileRequest {
+}
+
+// Response to a call.
 message CallResponse {
   bool success = 1;
   optional string error_message = 2;

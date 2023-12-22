@@ -23,6 +23,7 @@ tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread", "sync"] }
 colored = "2.0.4"
 pretty_assertions = "1.4.0"
+rdev = { version = "0.5.3", features = ["serialize"] }
 
 [profile.dev]
 opt-level = 0

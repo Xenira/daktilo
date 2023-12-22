@@ -35,7 +35,13 @@ mod tests {
 
     #[test]
     fn generate_manpage() -> Result<()> {
-        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../");
+        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_owned();
+
         if let Ok(out_dir) = env::var(OUT_DIR_ENV) {
             path = path.join(out_dir);
         } else {

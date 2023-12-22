@@ -24,6 +24,7 @@ pub mod audio;
 
 use app::App;
 use config::{SoundPreset, SoundVariation};
+use daktilo_common::event::DaktiloEvent;
 use error::Result;
 use rdev::listen;
 use std::thread;
@@ -35,11 +36,11 @@ pub async fn run(
     device: Option<String>,
 ) -> Result<()> {
     // Create a listener for the keyboard events.
-    let (sender, mut receiver) = tokio::sync::mpsc::unbounded_channel();
+    let (sender, mut receiver) = tokio::sync::mpsc::unbounded_channel::<DaktiloEvent>();
     thread::spawn(move || {
         listen(move |event| {
             sender
-                .send(event)
+                .send(event.event_type.into())
                 .unwrap_or_else(|e| tracing::error!("could not send event {:?}", e));
         })
         .expect("could not listen events");
@@ -52,12 +53,27 @@ pub async fn run(
         .map(|sound_preset| App::init(sound_preset, variation.clone(), device.clone()))
         .collect::<Result<Vec<_>>>()?;
 
+    let mut temp_apps = vec![];
+
     // Handle events.
     loop {
         if let Some(event) = receiver.recv().await {
-            for app in apps.iter_mut() {
-                app.handle_key_event(event.clone()).unwrap();
+            match event {
+                DaktiloEvent::ActivateTemp(name) => {
+                }
+                _ => {
+                    for app in apps.iter_mut() {
+                        app.handle_event(event.clone()).unwrap();
+                    }
+                }
             }
         }
     }
+}
+
+fn handle_event(event: DaktiloEvent, apps: &mut Vec<App>) -> Result<()> {
+            for app in apps.iter_mut() {
+                app.handle_event(event.clone())?;
+            }
+    Ok(())
 }
